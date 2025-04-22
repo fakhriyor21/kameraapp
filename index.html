@@ -8,62 +8,61 @@
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      background: linear-gradient(135deg, #74ebd5, #9face6);
       color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 15px;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
     }
 
     h1 {
       font-size: 2rem;
       color: #fff;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
-      margin-bottom: 25px;
-      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     }
 
     .camera-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
       width: 100%;
       max-width: 700px;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      padding: 20px;
-      text-align: center;
     }
 
     video, canvas {
       width: 100%;
-      height: auto;
-      border-radius: 12px;
-      margin-top: 15px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     button {
       margin-top: 20px;
-      padding: 12px 28px;
+      padding: 12px 24px;
       font-size: 16px;
-      font-weight: bold;
-      background: linear-gradient(to right, #0072ff, #00c6ff);
+      background: linear-gradient(135deg, #0072ff, #00c6ff);
       color: #fff;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     button:hover {
       transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     @media (max-width: 600px) {
@@ -72,23 +71,12 @@
       }
 
       button {
-        font-size: 15px;
+        font-size: 14px;
         padding: 10px 20px;
       }
 
       .camera-container {
         padding: 15px;
-      }
-    }
-
-    @media (max-width: 400px) {
-      h1 {
-        font-size: 1.2rem;
-      }
-
-      button {
-        font-size: 14px;
-        padding: 8px 18px;
       }
     }
   </style>
@@ -98,7 +86,7 @@
   <div class="camera-container">
     <video id="video" autoplay playsinline></video>
     <button id="snap">Rasmga Tushish</button>
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" style="display:none;"></canvas>
   </div>
 
   <script>
@@ -108,23 +96,26 @@
     const snap = document.getElementById("snap");
 
     // Kamerani ishga tushurish
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" } // "environment" orqa kamera uchun
-    })
-    .then(stream => {
-      video.srcObject = stream;
-      video.addEventListener("loadedmetadata", () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video.srcObject = stream;
+        video.addEventListener("loadedmetadata", () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        });
+      })
+      .catch(err => {
+        alert("Kamerani ishga tushirib bo'lmadi: " + err);
       });
-    })
-    .catch(err => {
-      alert("Kamerani ishga tushirib bo'lmadi: " + err);
-    });
 
     // Rasmga tushirish
     snap.addEventListener("click", () => {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Canvasni rasm sifatida saqlash
+      const imageUrl = canvas.toDataURL("image/png");
+      // Rasmni yangi oynada ko'rsatish
+      const imgWindow = window.open();
+      imgWindow.document.write(`<img src="${imageUrl}" alt="Captured Image" />`);
     });
   </script>
 </body>
